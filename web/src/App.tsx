@@ -3,6 +3,7 @@ import { Moon, Sun, Tv, Power, Loader2, Unplug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Remote } from "@/components/remote/remote";
+import { AppLauncher } from "@/components/remote/app-launcher";
 import { Connect } from "@/components/connect/connect";
 import { useToast } from "@/components/ui/toast";
 import { useTvStatus } from "@/hooks/use-tv-status";
@@ -23,6 +24,9 @@ export default function App() {
   };
   const handleDisconnect = () => {
     api.unpair().catch((err: ApiError) => toast(err.message));
+  };
+  const handleLaunch = (link: string) => {
+    api.launchApp(link).catch((err: ApiError) => toast(err.message));
   };
 
   useKeyboardRemote({ enabled: connected, onKey: handleKey, onPower: handlePower });
@@ -79,6 +83,10 @@ export default function App() {
               </div>
 
               <Remote onKey={handleKey} onPower={handlePower} />
+
+              <div className="border-t pt-5">
+                <AppLauncher onLaunch={handleLaunch} currentApp={status.currentApp} />
+              </div>
 
               <p className="text-center text-xs text-muted-foreground">
                 Tip: use your keyboard — arrows to navigate, Enter to select, Space to play/pause.
