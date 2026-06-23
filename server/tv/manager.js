@@ -10,12 +10,51 @@
  *
  * Reconnecting (subsequent runs) uses the saved certificate via connect().
  */
+import { EventEmitter } from "node:events";
 import { AndroidRemote, RemoteKeyCode, RemoteDirection } from "androidtv-remote";
 import { config } from "../config.js";
 
 const SERVICE_NAME = "Television Controller";
 const PAIRING_PORT = 6467;
 const REMOTE_PORT = 6466;
+
+/**
+ * Friendly command names exposed to the UI, mapped to Android key codes.
+ * The frontend sends semantic names (e.g. "dpad_up") rather than raw codes,
+ * so only this vetted set of buttons can ever be triggered.
+ */
+const KEY_MAP = {
+  // D-pad
+  dpad_up: RemoteKeyCode.KEYCODE_DPAD_UP,
+  dpad_down: RemoteKeyCode.KEYCODE_DPAD_DOWN,
+  dpad_left: RemoteKeyCode.KEYCODE_DPAD_LEFT,
+  dpad_right: RemoteKeyCode.KEYCODE_DPAD_RIGHT,
+  select: RemoteKeyCode.KEYCODE_DPAD_CENTER,
+  // Navigation
+  home: RemoteKeyCode.KEYCODE_HOME,
+  back: RemoteKeyCode.KEYCODE_BACK,
+  menu: RemoteKeyCode.KEYCODE_MENU,
+  settings: RemoteKeyCode.KEYCODE_SETTINGS,
+  // Volume
+  volume_up: RemoteKeyCode.KEYCODE_VOLUME_UP,
+  volume_down: RemoteKeyCode.KEYCODE_VOLUME_DOWN,
+  mute: RemoteKeyCode.KEYCODE_VOLUME_MUTE,
+  // Media transport
+  play_pause: RemoteKeyCode.KEYCODE_MEDIA_PLAY_PAUSE,
+  stop: RemoteKeyCode.KEYCODE_MEDIA_STOP,
+  next: RemoteKeyCode.KEYCODE_MEDIA_NEXT,
+  previous: RemoteKeyCode.KEYCODE_MEDIA_PREVIOUS,
+  rewind: RemoteKeyCode.KEYCODE_MEDIA_REWIND,
+  fast_forward: RemoteKeyCode.KEYCODE_MEDIA_FAST_FORWARD,
+  // Channels
+  channel_up: RemoteKeyCode.KEYCODE_CHANNEL_UP,
+  channel_down: RemoteKeyCode.KEYCODE_CHANNEL_DOWN,
+  // Power (toggle)
+  power: RemoteKeyCode.KEYCODE_POWER,
+};
+
+/** Names of the commands the UI is allowed to send. */
+export const SUPPORTED_KEYS = Object.keys(KEY_MAP);
 
 const SECRET_TIMEOUT = 15_000; // wait for the TV to display its pairing code
 const READY_TIMEOUT = 15_000; // wait for the remote channel to come up
@@ -28,8 +67,9 @@ function withTimeout(promise, ms, message) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
-class TvManager {
+class TvManager extends EventEmitter {
   constructor() {
+    super();
     /** @type {AndroidRemote|null} active, paired connection */
     this.remote = null;
     /** Live device state mirrored from the TV's events. */
@@ -50,6 +90,11 @@ class TvManager {
     };
   }
 
+  /** Broadcast the current status to any SSE subscribers. */
+  _emitState() {
+    this.emit("state", this.getStatus());
+  }
+
   /** Wire a paired AndroidRemote instance up as the active connection. */
   _activate(remote, host, name) {
     this.remote = remote;
@@ -57,20 +102,60 @@ class TvManager {
 
     remote.on("powered", (powered) => {
       this.state.powered = powered;
+      this._emitState();
     });
     remote.on("volume", (volume) => {
       this.state.volume = volume;
+      this._emitState();
     });
     remote.on("current_app", (currentApp) => {
       this.state.currentApp = currentApp;
+      this._emitState();
     });
     remote.on("unpaired", () => this._teardown());
     remote.on("close", () => this._teardown());
+
+    this._emitState();
   }
 
   _teardown() {
     this.remote = null;
     this.state = { host: null, name: null, powered: false, volume: null, currentApp: null };
+    this._emitState();
+  }
+
+  // --- Commands -------------------------------------------------------------
+
+  _requireConnection() {
+    if (!this.remote) {
+      throw new Error("Not connected to a TV. Pair or connect first.");
+    }
+  }
+
+  /** Send one of the supported remote buttons by its friendly name. */
+  sendKey(name) {
+    this._requireConnection();
+    const code = KEY_MAP[name];
+    if (code === undefined) {
+      throw new Error(`Unsupported key: ${name}`);
+    }
+    this.remote.sendKey(code, RemoteDirection.SHORT);
+    return { sent: name };
+  }
+
+  /** Toggle the TV's power. */
+  power() {
+    this._requireConnection();
+    this.remote.sendPower();
+    return { sent: "power" };
+  }
+
+  /** Open a deep link / app on the TV, e.g. a YouTube or app:// URL. */
+  launchApp(link) {
+    this._requireConnection();
+    if (!link) throw new Error("An app link is required.");
+    this.remote.sendAppLink(link);
+    return { sent: "app", link };
   }
 
   /**
