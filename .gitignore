@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+web/dist/
+
+# Local config & secrets (paired TV certificates, saved IPs)
+config.json
+server/config.json
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Internal planning / agent docs — not published to GitHub
+PLAN.md
+CLAUDE.md
+AGENTS.md
+.claude/
+TODO.md
+NOTES.md
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.swp

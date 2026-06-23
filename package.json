@@ -1,0 +1,24 @@
+{
+  "name": "television-controller",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Control your Android TV / Google TV (Grundig, Sony, Philips, TCL, Nvidia Shield...) from your computer through a clean, modern web interface on the same local network.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix web install",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix server start",
+    "dev:server": "npm --prefix server run dev",
+    "dev:web": "npm --prefix web run dev"
+  },
+  "keywords": [
+    "android-tv",
+    "google-tv",
+    "remote-control",
+    "grundig",
+    "tv-remote"
+  ]
+}
