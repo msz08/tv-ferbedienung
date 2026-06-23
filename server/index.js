@@ -54,11 +54,15 @@ app.listen(PORT, () => {
   console.log(`\n  📺 Television Controller server running`);
   console.log(`     ➜  http://localhost:${PORT}\n`);
 
-  // Try to silently reconnect to a previously paired TV.
+  // Try to silently reconnect to a previously paired TV. If it's currently
+  // off/unreachable, keep retrying in the background until it comes back.
   tvManager
     .connectSaved()
     .then((status) => {
       if (status) console.log(`     ✓ Reconnected to ${status.name} (${status.host})`);
     })
-    .catch((err) => console.warn(`     ! Could not reconnect to saved TV: ${err.message}`));
+    .catch((err) => {
+      console.warn(`     ! Saved TV not reachable yet (${err.message}); will keep retrying`);
+      tvManager.ensureReconnect();
+    });
 });

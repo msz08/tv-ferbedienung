@@ -4,6 +4,7 @@
  *   GET  /api/tv/discover      -> list Android TVs found on the network
  *   POST /api/tv/pair/start    -> { host, name } : make the TV show a code
  *   POST /api/tv/pair/finish   -> { code }       : submit the on-screen code
+ *   POST /api/tv/connect       -> reconnect to the saved TV (no re-pairing)
  *   POST /api/tv/unpair        -> disconnect and forget the saved TV
  *   GET  /api/tv/status        -> current connection state
  *   GET  /api/tv/keys          -> list of supported remote buttons
@@ -57,6 +58,16 @@ router.post("/tv/pair/finish", async (req, res) => {
   try {
     const result = await tvManager.submitCode(String(code).trim());
     res.json({ status: "paired", ...result });
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+router.post("/tv/connect", async (req, res) => {
+  try {
+    const status = await tvManager.connectSaved();
+    if (!status) return res.status(404).json({ error: "No saved TV to reconnect to." });
+    res.json(status);
   } catch (err) {
     res.status(502).json({ error: err.message });
   }

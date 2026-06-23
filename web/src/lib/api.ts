@@ -29,6 +29,7 @@ const post = <T>(path: string, body?: unknown) =>
 export interface TvStatus {
   connected: boolean;
   pairing: boolean;
+  saved: { host: string; name: string | null } | null;
   host: string | null;
   name: string | null;
   powered: boolean;
@@ -55,6 +56,7 @@ export const api = {
     post<{ status: string; host: string; name: string }>("/api/tv/pair/start", { host, name }),
   pairFinish: (code: string) =>
     post<{ status: string; host: string; name: string }>("/api/tv/pair/finish", { code }),
+  connect: () => post<TvStatus>("/api/tv/connect"),
   unpair: () => post<{ status: string }>("/api/tv/unpair"),
 };
 

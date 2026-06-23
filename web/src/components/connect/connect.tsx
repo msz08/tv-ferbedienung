@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, RefreshCw, Tv, Wifi } from "lucide-react";
+import { Loader2, RefreshCw, RotateCw, Tv, Wifi } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api, ApiError, type TvDevice } from "@/lib/api";
 
 type Step = "select" | "code";
 
+interface ConnectProps {
+  /** A previously paired TV we can reconnect to without re-pairing. */
+  saved: { host: string; name: string | null } | null;
+}
+
 /**
  * Discovery + pairing flow. Scans for TVs, lets the user pick one (or type an
  * IP), triggers the on-screen code, and submits it. Once pairing succeeds the
  * live status stream flips to connected and the parent swaps in the remote.
  */
-export function Connect() {
+export function Connect({ saved }: ConnectProps) {
   const [devices, setDevices] = useState<TvDevice[]>([]);
   const [scanning, setScanning] = useState(false);
   const [manualHost, setManualHost] = useState("");
@@ -21,7 +26,21 @@ export function Connect() {
   const [pending, setPending] = useState<{ host: string; name: string } | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const reconnect = async () => {
+    setReconnecting(true);
+    setError(null);
+    try {
+      await api.connect();
+      // On success the status stream flips to connected and unmounts this.
+    } catch (err) {
+      setError((err as ApiError).message);
+    } finally {
+      setReconnecting(false);
+    }
+  };
 
   const scan = async () => {
     setScanning(true);
@@ -88,6 +107,22 @@ export function Connect() {
             transition={{ duration: 0.2 }}
             className="space-y-5"
           >
+            {saved && (
+              <div className="flex items-center gap-3 rounded-xl border bg-secondary/50 p-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-background">
+                  <Tv className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium">{saved.name ?? "Android TV"}</div>
+                  <div className="truncate text-xs text-muted-foreground">Previously paired · {saved.host}</div>
+                </div>
+                <Button size="sm" onClick={reconnect} disabled={reconnecting} className="shrink-0 gap-1.5">
+                  {reconnecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RotateCw className="h-3.5 w-3.5" />}
+                  Reconnect
+                </Button>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold">Connect a TV</h2>
               <Button variant="ghost" size="sm" onClick={scan} disabled={scanning} className="gap-1.5">

@@ -106,6 +106,9 @@ class TvManager extends EventEmitter {
     this.state = { host: null, name: null, powered: false, volume: null, currentApp: null };
     /** @type {{remote:AndroidRemote, host:string, name:string, startPromise:Promise}|null} */
     this.pairing = null;
+    /** When true, automatically reconnect to the saved TV after a drop. */
+    this.autoReconnect = true;
+    this._reconnectTimer = null;
   }
 
   isConnected() {
@@ -113,9 +116,12 @@ class TvManager extends EventEmitter {
   }
 
   getStatus() {
+    const tv = config.get("tv");
     return {
       connected: this.isConnected(),
       pairing: this.pairing !== null,
+      // A previously paired TV we can reconnect to without re-pairing.
+      saved: tv?.host ? { host: tv.host, name: tv.name ?? null } : null,
       ...this.state,
     };
   }
@@ -128,6 +134,11 @@ class TvManager extends EventEmitter {
   /** Wire a paired AndroidRemote instance up as the active connection. */
   _activate(remote, host, name) {
     this.remote = remote;
+    this.autoReconnect = true;
+    if (this._reconnectTimer) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
     this.state = { host, name, powered: false, volume: null, currentApp: null };
 
     remote.on("powered", (powered) => {
@@ -152,6 +163,25 @@ class TvManager extends EventEmitter {
     this.remote = null;
     this.state = { host: null, name: null, powered: false, volume: null, currentApp: null };
     this._emitState();
+    // The connection dropped unexpectedly: try to come back on our own.
+    if (this.autoReconnect) this._scheduleReconnect();
+  }
+
+  /** Keep retrying connect() to the saved TV until it comes back. */
+  _scheduleReconnect(delay = 5000) {
+    if (this._reconnectTimer || this.remote) return;
+    const tv = config.get("tv");
+    if (!tv?.host || !tv?.cert?.cert) return;
+
+    this._reconnectTimer = setTimeout(async () => {
+      this._reconnectTimer = null;
+      if (this.remote || !this.autoReconnect) return;
+      try {
+        await this.connect(tv.host, tv.name, tv.cert);
+      } catch {
+        this._scheduleReconnect(delay); // still down — try again later
+      }
+    }, delay);
   }
 
   // --- Commands -------------------------------------------------------------
@@ -309,8 +339,20 @@ class TvManager extends EventEmitter {
     return this.connect(tv.host, tv.name, tv.cert);
   }
 
+  /** Start the background reconnect loop for the saved TV (if not connected). */
+  ensureReconnect() {
+    this.autoReconnect = true;
+    this._scheduleReconnect(0);
+  }
+
   /** Disconnect and forget the paired TV. */
   unpair() {
+    // Stop auto-reconnect first so tearing down doesn't immediately retry.
+    this.autoReconnect = false;
+    if (this._reconnectTimer) {
+      clearTimeout(this._reconnectTimer);
+      this._reconnectTimer = null;
+    }
     if (this.remote) {
       try {
         this.remote.stop();
@@ -318,8 +360,8 @@ class TvManager extends EventEmitter {
         /* ignore */
       }
     }
-    this._teardown();
     config.clearTv();
+    this._teardown();
   }
 }
 

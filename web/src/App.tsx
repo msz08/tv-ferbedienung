@@ -109,7 +109,7 @@ export default function App() {
               </p>
             </div>
           ) : (
-            <Connect />
+            <Connect saved={status.saved} />
           )}
         </motion.div>
       </main>
