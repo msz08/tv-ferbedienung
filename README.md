@@ -1,53 +1,52 @@
 # Television Controller
 
-Control your Android TV / Google TV (Grundig, Sony, Philips, TCL, Nvidia Shield, Chromecast with Google TV, and more) from your computer through a clean web interface — all over your local network.
+Turn your computer into a remote for your TV. Television Controller runs a small app in your browser that detects your Android TV on the same network and lets you control it — navigation, volume, playback, power and more — without reaching for the physical remote or installing anything on the TV.
 
-No developer mode, no ADB, no cables. Run it, pair with a code shown on your TV, and you have a full remote in the browser.
+> Work in progress. Active development is ongoing.
 
-> Work in progress. This project is under active development.
+## Overview
 
-## Features
+Lost the remote? Tired of switching devices? Television Controller gives you a full, on-screen remote right in your browser. Everything happens locally on your own network — there is no cloud account, no pairing app on your phone, and nothing extra to install on the television itself.
 
-- Auto-discovery of Android TVs on your network via mDNS
-- Secure pairing using Google's official Android TV Remote Protocol v2 (6-digit on-screen code)
-- Full remote: D-pad, OK, power, volume, mute, media keys, home and back
-- Launch apps on the TV
-- Clean, minimal interface with light and dark themes
-- One-click start on Windows with `baslat.bat`
+It speaks Google's official Android TV Remote protocol, the same one the Google Home app uses, so you don't need developer mode, ADB, or any cables.
 
-## Tech Stack
+## How it works
 
-- Backend: Node.js, Express, [`androidtv-remote`](https://www.npmjs.com/package/androidtv-remote)
-- Frontend: React, Vite, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+1. **Start it.** Run the launcher. It boots a small local server and opens the interface in your browser at `http://localhost:3000`.
+2. **It finds your TV.** The app scans your local network and lists the Android TVs it discovers. You can also type the TV's IP address directly.
+3. **Pair once.** Pick your TV and a 6-digit code appears on the screen. Enter it in the browser. The pairing is remembered, so you only do this the first time.
+4. **Control it.** Use the on-screen remote — directional pad, OK, volume, mute, channels, media playback, home, back and power. Every press travels straight to your TV over your local network, instantly.
 
-## Getting Started
+## Getting started
 
-Detailed instructions will be added once the launcher is ready.
+You only need [Node.js](https://nodejs.org/) 18 or newer installed.
 
-```bash
-# 1. Install dependencies
-npm run install:all
+**Windows** — double-click `start.bat`
 
-# 2. Build the web UI
-npm run build
+**macOS / Linux** — run `./start.sh`
 
-# 3. Start the server
-npm start
-```
-
-Then open http://localhost:3000 in your browser.
-
-On Windows you will be able to simply double-click `baslat.bat`.
+The first launch installs what it needs and builds the interface, then opens it in your browser automatically. Later launches start in seconds.
 
 ## Requirements
 
-- A computer and an Android TV / Google TV on the same local network
+- A computer and an Android TV / Google TV on the **same local network**
 - [Node.js](https://nodejs.org/) 18 or newer
 
-## Notes
+## Supported TVs
 
-- Very old Linux/Zeasn-based Grundig models (non-Android) are not supported by this protocol.
-- Powering the TV on while it is fully off may require Wake-on-LAN (planned as a future enhancement).
+Any Android TV or Google TV based television or device, including Grundig, Sony, Philips, TCL, Nvidia Shield and Chromecast with Google TV.
+
+Very old Grundig models that are not Android-based (Linux/Zeasn) are not supported, since they don't speak the same remote protocol.
+
+## Privacy
+
+Nothing leaves your network. The connection is made directly to the TV, and the pairing certificate is stored locally on your machine and never shared.
+
+## Screenshot
+
+_Coming soon._
+
+<!-- ![Television Controller](docs/screenshot.png) -->
 
 ## License
 
