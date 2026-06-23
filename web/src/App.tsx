@@ -1,20 +1,24 @@
 import { motion } from "framer-motion";
-import { Moon, Sun, Tv } from "lucide-react";
+import { Moon, Sun, Tv, Power, Loader2, Unplug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Remote } from "@/components/remote/remote";
+import { Connect } from "@/components/connect/connect";
+import { useTvStatus } from "@/hooks/use-tv-status";
 import { api, ApiError } from "@/lib/api";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
+  const status = useTvStatus();
 
-  // Fire-and-forget command senders. Connection state and error surfacing
-  // are wired up in the next phase.
   const handleKey = (key: string) => {
     api.sendKey(key).catch((err: ApiError) => console.warn(`key ${key}:`, err.message));
   };
   const handlePower = () => {
     api.power().catch((err: ApiError) => console.warn("power:", err.message));
+  };
+  const handleDisconnect = () => {
+    api.unpair().catch((err: ApiError) => console.warn("unpair:", err.message));
   };
 
   return (
@@ -36,7 +40,43 @@ export default function App() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="rounded-2xl border bg-card p-6 text-card-foreground shadow-sm"
         >
-          <Remote onKey={handleKey} onPower={handlePower} />
+          {status === null ? (
+            <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Connecting…
+            </div>
+          ) : status.connected ? (
+            <div className="space-y-6">
+              {/* Connection status bar */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  </span>
+                  <div className="leading-tight">
+                    <div className="flex items-center gap-1.5 text-sm font-medium">
+                      {status.name ?? "Android TV"}
+                      {status.powered === false && (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <Power className="h-3 w-3" /> standby
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{status.host}</div>
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleDisconnect} className="gap-1.5 text-muted-foreground">
+                  <Unplug className="h-3.5 w-3.5" />
+                  Disconnect
+                </Button>
+              </div>
+
+              <Remote onKey={handleKey} onPower={handlePower} />
+            </div>
+          ) : (
+            <Connect />
+          )}
         </motion.div>
       </main>
     </div>

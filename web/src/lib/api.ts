@@ -36,9 +36,39 @@ export interface TvStatus {
   currentApp: string | null;
 }
 
+export interface TvDevice {
+  name: string;
+  host: string;
+  port: number;
+}
+
 export const api = {
   getStatus: () => request<TvStatus>("/api/tv/status"),
   sendKey: (key: string) => post<{ sent: string }>("/api/tv/key", { key }),
   power: () => post<{ sent: string }>("/api/tv/power"),
   launchApp: (link: string) => post<{ sent: string }>("/api/tv/app", { link }),
+
+  // Discovery & pairing
+  discover: () => request<{ devices: TvDevice[] }>("/api/tv/discover"),
+  pairStart: (host: string, name?: string) =>
+    post<{ status: string; host: string; name: string }>("/api/tv/pair/start", { host, name }),
+  pairFinish: (code: string) =>
+    post<{ status: string; host: string; name: string }>("/api/tv/pair/finish", { code }),
+  unpair: () => post<{ status: string }>("/api/tv/unpair"),
 };
+
+/**
+ * Subscribe to live TV status over Server-Sent Events. Returns an
+ * unsubscribe function. EventSource reconnects automatically on drop.
+ */
+export function subscribeStatus(onUpdate: (status: TvStatus) => void): () => void {
+  const source = new EventSource("/api/tv/events");
+  source.onmessage = (event) => {
+    try {
+      onUpdate(JSON.parse(event.data) as TvStatus);
+    } catch {
+      /* ignore malformed frames */
+    }
+  };
+  return () => source.close();
+}
