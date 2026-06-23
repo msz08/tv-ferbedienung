@@ -11,12 +11,14 @@ import { matchCurrentApp } from "@/lib/apps";
 import { useToast } from "@/components/ui/toast";
 import { useTvStatus } from "@/hooks/use-tv-status";
 import { useKeyboardRemote } from "@/hooks/use-keyboard-remote";
+import { useApps } from "@/hooks/use-apps";
 import { api, ApiError } from "@/lib/api";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const status = useTvStatus();
+  const { apps, save: saveApps, reset: resetApps } = useApps();
   const connected = status?.connected ?? false;
 
   const handleKey = (key: string) => {
@@ -33,6 +35,12 @@ export default function App() {
   };
   const handleText = (text: string) => {
     api.sendText(text).catch((err: ApiError) => toast(err.message));
+  };
+  const handleSaveApps = (next: typeof apps) => {
+    saveApps(next).catch((err: ApiError) => toast(err.message));
+  };
+  const handleResetApps = () => {
+    resetApps().catch((err: ApiError) => toast(err.message));
   };
 
   useKeyboardRemote({ enabled: connected, onKey: handleKey, onPower: handlePower });
@@ -81,7 +89,7 @@ export default function App() {
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {status.currentApp
-                        ? (matchCurrentApp(status.currentApp)?.name ?? status.currentApp)
+                        ? (matchCurrentApp(apps, status.currentApp)?.name ?? status.currentApp)
                         : status.host}
                     </div>
                   </div>
@@ -101,7 +109,13 @@ export default function App() {
               </div>
 
               <div className="border-t pt-5">
-                <AppLauncher onLaunch={handleLaunch} currentApp={status.currentApp} />
+                <AppLauncher
+                  apps={apps}
+                  currentApp={status.currentApp}
+                  onLaunch={handleLaunch}
+                  onSave={handleSaveApps}
+                  onReset={handleResetApps}
+                />
               </div>
 
               <p className="text-center text-xs text-muted-foreground">

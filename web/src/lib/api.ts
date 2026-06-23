@@ -2,6 +2,7 @@
  * Thin client for the backend API. Same-origin in production (the server
  * serves the UI); proxied to :3000 by Vite during development.
  */
+import type { AppEntry } from "@/lib/apps";
 
 export class ApiError extends Error {
   status: number;
@@ -49,6 +50,11 @@ export const api = {
   power: () => post<{ sent: string }>("/api/tv/power"),
   sendText: (text: string) => post<{ sent: number }>("/api/tv/text", { text }),
   launchApp: (link: string) => post<{ sent: string }>("/api/tv/app", { link }),
+
+  // App shortcuts
+  getApps: () => request<{ apps: AppEntry[] }>("/api/apps"),
+  saveApps: (apps: AppEntry[]) => request<{ apps: AppEntry[] }>("/api/apps", { method: "PUT", body: JSON.stringify({ apps }) }),
+  resetApps: () => post<{ apps: AppEntry[] }>("/api/apps/reset"),
 
   // Discovery & pairing
   discover: () => request<{ devices: TvDevice[] }>("/api/tv/discover"),

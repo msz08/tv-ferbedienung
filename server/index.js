@@ -16,6 +16,7 @@ import { existsSync } from "node:fs";
 import { config } from "./config.js";
 import healthRoutes from "./routes/health.js";
 import tvRoutes from "./routes/tv.js";
+import appsRoutes from "./routes/apps.js";
 import { tvManager } from "./tv/manager.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -28,6 +29,7 @@ app.use(express.json());
 // --- API ------------------------------------------------------------------
 app.use("/api", healthRoutes);
 app.use("/api", tvRoutes);
+app.use("/api", appsRoutes);
 
 // --- Static web UI ---------------------------------------------------------
 if (existsSync(WEB_DIST)) {

@@ -1,8 +1,6 @@
 /**
- * Catalog of common Android TV apps. Launching uses sendAppLink with a URL
- * the app registers as a deep link. `match` holds substrings used to detect
- * whether the app is currently in the foreground (from status.currentApp,
- * which the TV reports as a package name or link).
+ * App shortcut types and helpers. The actual catalog is owned by the backend
+ * (defaults + the user's saved edits) and fetched at runtime.
  */
 export interface AppEntry {
   name: string;
@@ -15,54 +13,22 @@ export interface AppEntry {
   match: string[];
 }
 
-export const APPS: AppEntry[] = [
-  {
-    name: "YouTube",
-    link: "https://www.youtube.com",
-    short: "YT",
-    color: "#FF0000",
-    match: ["youtube"],
-  },
-  {
-    name: "Netflix",
-    link: "https://www.netflix.com/title",
-    short: "N",
-    color: "#E50914",
-    match: ["netflix", "ninja"],
-  },
-  {
-    name: "Prime Video",
-    link: "https://app.primevideo.com",
-    short: "PV",
-    color: "#1399FF",
-    match: ["primevideo", "amazonvideo", "amazon"],
-  },
-  {
-    name: "Disney+",
-    link: "https://www.disneyplus.com",
-    short: "D+",
-    color: "#113CCF",
-    match: ["disney"],
-  },
-  {
-    name: "Spotify",
-    link: "spotify://",
-    short: "S",
-    color: "#1DB954",
-    match: ["spotify"],
-  },
-  {
-    name: "Twitch",
-    link: "https://www.twitch.tv",
-    short: "TW",
-    color: "#9146FF",
-    match: ["twitch"],
-  },
-];
-
-/** Find the app that matches the TV's reported current app, if any. */
-export function matchCurrentApp(currentApp: string | null): AppEntry | undefined {
+/** Find the app in `apps` that matches the TV's reported current app, if any. */
+export function matchCurrentApp(apps: AppEntry[], currentApp: string | null): AppEntry | undefined {
   if (!currentApp) return undefined;
   const value = currentApp.toLowerCase();
-  return APPS.find((app) => app.match.some((m) => value.includes(m)));
+  return apps.find((app) => app.match.some((m) => value.includes(m)));
 }
+
+/** Preset tile colors offered when adding a custom app. */
+export const APP_COLORS = [
+  "#FF0000",
+  "#E50914",
+  "#1399FF",
+  "#113CCF",
+  "#1DB954",
+  "#9146FF",
+  "#F97316",
+  "#0EA5E9",
+  "#64748b",
+];
