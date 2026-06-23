@@ -4,22 +4,28 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Remote } from "@/components/remote/remote";
 import { Connect } from "@/components/connect/connect";
+import { useToast } from "@/components/ui/toast";
 import { useTvStatus } from "@/hooks/use-tv-status";
+import { useKeyboardRemote } from "@/hooks/use-keyboard-remote";
 import { api, ApiError } from "@/lib/api";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
   const status = useTvStatus();
+  const connected = status?.connected ?? false;
 
   const handleKey = (key: string) => {
-    api.sendKey(key).catch((err: ApiError) => console.warn(`key ${key}:`, err.message));
+    api.sendKey(key).catch((err: ApiError) => toast(err.message));
   };
   const handlePower = () => {
-    api.power().catch((err: ApiError) => console.warn("power:", err.message));
+    api.power().catch((err: ApiError) => toast(err.message));
   };
   const handleDisconnect = () => {
-    api.unpair().catch((err: ApiError) => console.warn("unpair:", err.message));
+    api.unpair().catch((err: ApiError) => toast(err.message));
   };
+
+  useKeyboardRemote({ enabled: connected, onKey: handleKey, onPower: handlePower });
 
   return (
     <div className="min-h-screen w-full bg-background">
@@ -73,6 +79,10 @@ export default function App() {
               </div>
 
               <Remote onKey={handleKey} onPower={handlePower} />
+
+              <p className="text-center text-xs text-muted-foreground">
+                Tip: use your keyboard — arrows to navigate, Enter to select, Space to play/pause.
+              </p>
             </div>
           ) : (
             <Connect />
