@@ -5,7 +5,9 @@ import { useTheme } from "@/components/theme-provider";
 import { Remote } from "@/components/remote/remote";
 import { AppLauncher } from "@/components/remote/app-launcher";
 import { Keypad } from "@/components/remote/keypad";
+import { VolumeBar } from "@/components/remote/volume-bar";
 import { Connect } from "@/components/connect/connect";
+import { matchCurrentApp } from "@/lib/apps";
 import { useToast } from "@/components/ui/toast";
 import { useTvStatus } from "@/hooks/use-tv-status";
 import { useKeyboardRemote } from "@/hooks/use-keyboard-remote";
@@ -77,7 +79,11 @@ export default function App() {
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-muted-foreground">{status.host}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {status.currentApp
+                        ? (matchCurrentApp(status.currentApp)?.name ?? status.currentApp)
+                        : status.host}
+                    </div>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" onClick={handleDisconnect} className="gap-1.5 text-muted-foreground">
@@ -85,6 +91,8 @@ export default function App() {
                   Disconnect
                 </Button>
               </div>
+
+              <VolumeBar volume={status.volume} onKey={handleKey} />
 
               <Remote onKey={handleKey} onPower={handlePower} />
 

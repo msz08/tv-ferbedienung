@@ -32,7 +32,7 @@ export interface TvStatus {
   host: string | null;
   name: string | null;
   powered: boolean;
-  volume: { level?: number; max?: number; muted?: boolean } | null;
+  volume: { level?: number; maximum?: number; muted?: boolean } | null;
   currentApp: string | null;
 }
 
