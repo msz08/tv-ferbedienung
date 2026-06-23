@@ -13,6 +13,7 @@ import { useTvStatus } from "@/hooks/use-tv-status";
 import { useKeyboardRemote } from "@/hooks/use-keyboard-remote";
 import { useApps } from "@/hooks/use-apps";
 import { api, ApiError } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -47,7 +48,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full bg-background">
-      <header className="mx-auto flex max-w-md items-center justify-between px-5 py-5">
+      <header
+        className={cn(
+          "mx-auto flex items-center justify-between px-5 py-4",
+          connected ? "max-w-3xl" : "max-w-md"
+        )}
+      >
         <div className="flex items-center gap-2">
           <Tv className="h-5 w-5 text-muted-foreground" />
           <span className="text-sm font-semibold tracking-tight">Television Controller</span>
@@ -57,7 +63,7 @@ export default function App() {
         </Button>
       </header>
 
-      <main className="mx-auto max-w-md px-5 pb-16">
+      <main className={cn("mx-auto px-5 pb-10", connected ? "max-w-3xl" : "max-w-md")}>
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -100,22 +106,26 @@ export default function App() {
                 </Button>
               </div>
 
-              <VolumeBar volume={status.volume} onKey={handleKey} />
+              <div className="grid gap-x-8 gap-y-6 md:grid-cols-2">
+                {/* Left: live volume + the remote itself */}
+                <div className="space-y-5">
+                  <VolumeBar volume={status.volume} onKey={handleKey} />
+                  <Remote onKey={handleKey} onPower={handlePower} />
+                </div>
 
-              <Remote onKey={handleKey} onPower={handlePower} />
-
-              <div className="border-t pt-5">
-                <Keypad onKey={handleKey} onText={handleText} />
-              </div>
-
-              <div className="border-t pt-5">
-                <AppLauncher
-                  apps={apps}
-                  currentApp={status.currentApp}
-                  onLaunch={handleLaunch}
-                  onSave={handleSaveApps}
-                  onReset={handleResetApps}
-                />
+                {/* Right: apps and the number pad */}
+                <div className="space-y-5 border-t pt-5 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+                  <AppLauncher
+                    apps={apps}
+                    currentApp={status.currentApp}
+                    onLaunch={handleLaunch}
+                    onSave={handleSaveApps}
+                    onReset={handleResetApps}
+                  />
+                  <div className="border-t pt-5">
+                    <Keypad onKey={handleKey} onText={handleText} />
+                  </div>
+                </div>
               </div>
 
               <p className="text-center text-xs text-muted-foreground">

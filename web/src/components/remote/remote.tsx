@@ -54,7 +54,7 @@ export function Remote({ onKey, onPower, disabled }: RemoteProps) {
   const k = (key: string) => () => onKey(key);
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       {/* Top controls: power, mute, home, back */}
       <div className="flex items-center justify-between">
         <RemoteButton label="Power" onPress={onPower} variant="danger" disabled={disabled} className="h-12 w-12">
