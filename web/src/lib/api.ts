@@ -46,6 +46,7 @@ export const api = {
   getStatus: () => request<TvStatus>("/api/tv/status"),
   sendKey: (key: string) => post<{ sent: string }>("/api/tv/key", { key }),
   power: () => post<{ sent: string }>("/api/tv/power"),
+  sendText: (text: string) => post<{ sent: number }>("/api/tv/text", { text }),
   launchApp: (link: string) => post<{ sent: string }>("/api/tv/app", { link }),
 
   // Discovery & pairing

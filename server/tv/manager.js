@@ -51,10 +51,40 @@ const KEY_MAP = {
   channel_down: RemoteKeyCode.KEYCODE_CHANNEL_DOWN,
   // Power (toggle)
   power: RemoteKeyCode.KEYCODE_POWER,
+  // Digits (channel entry / number input)
+  "0": RemoteKeyCode.KEYCODE_0,
+  "1": RemoteKeyCode.KEYCODE_1,
+  "2": RemoteKeyCode.KEYCODE_2,
+  "3": RemoteKeyCode.KEYCODE_3,
+  "4": RemoteKeyCode.KEYCODE_4,
+  "5": RemoteKeyCode.KEYCODE_5,
+  "6": RemoteKeyCode.KEYCODE_6,
+  "7": RemoteKeyCode.KEYCODE_7,
+  "8": RemoteKeyCode.KEYCODE_8,
+  "9": RemoteKeyCode.KEYCODE_9,
+  // Text editing
+  space: RemoteKeyCode.KEYCODE_SPACE,
+  delete: RemoteKeyCode.KEYCODE_DEL,
+  enter: RemoteKeyCode.KEYCODE_ENTER,
+  search: RemoteKeyCode.KEYCODE_SEARCH,
 };
 
 /** Names of the commands the UI is allowed to send. */
 export const SUPPORTED_KEYS = Object.keys(KEY_MAP);
+
+/**
+ * Map printable characters to key codes so we can "type" into on-screen
+ * fields (e.g. a search box) one key event at a time.
+ */
+const CHAR_TO_KEY = (() => {
+  const map = { " ": RemoteKeyCode.KEYCODE_SPACE };
+  for (let d = 0; d <= 9; d++) map[String(d)] = RemoteKeyCode[`KEYCODE_${d}`];
+  for (let c = 0; c < 26; c++) {
+    const letter = String.fromCharCode(97 + c); // a-z
+    map[letter] = RemoteKeyCode[`KEYCODE_${letter.toUpperCase()}`];
+  }
+  return map;
+})();
 
 const SECRET_TIMEOUT = 15_000; // wait for the TV to display its pairing code
 const READY_TIMEOUT = 15_000; // wait for the remote channel to come up
@@ -141,6 +171,23 @@ class TvManager extends EventEmitter {
     }
     this.remote.sendKey(code, RemoteDirection.SHORT);
     return { sent: name };
+  }
+
+  /** "Type" a string into the focused field by sending one key per character. */
+  sendText(text) {
+    this._requireConnection();
+    if (typeof text !== "string" || text.length === 0) {
+      throw new Error("Text is required.");
+    }
+    let sent = 0;
+    for (const ch of text.toLowerCase()) {
+      const code = CHAR_TO_KEY[ch];
+      if (code !== undefined) {
+        this.remote.sendKey(code, RemoteDirection.SHORT);
+        sent++;
+      }
+    }
+    return { sent };
   }
 
   /** Toggle the TV's power. */

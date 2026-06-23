@@ -9,6 +9,7 @@
  *   GET  /api/tv/keys          -> list of supported remote buttons
  *   POST /api/tv/key           -> { key }  : press a remote button
  *   POST /api/tv/power         -> toggle power
+ *   POST /api/tv/text          -> { text } : type text into the focused field
  *   POST /api/tv/app           -> { link } : open an app / deep link
  *   GET  /api/tv/events        -> Server-Sent Events stream of live status
  */
@@ -83,6 +84,15 @@ router.post("/tv/key", (req, res) => {
 router.post("/tv/power", (req, res) => {
   try {
     res.json(tvManager.power());
+  } catch (err) {
+    res.status(409).json({ error: err.message });
+  }
+});
+
+router.post("/tv/text", (req, res) => {
+  const { text } = req.body ?? {};
+  try {
+    res.json(tvManager.sendText(text));
   } catch (err) {
     res.status(409).json({ error: err.message });
   }

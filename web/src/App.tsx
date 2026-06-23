@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Remote } from "@/components/remote/remote";
 import { AppLauncher } from "@/components/remote/app-launcher";
+import { Keypad } from "@/components/remote/keypad";
 import { Connect } from "@/components/connect/connect";
 import { useToast } from "@/components/ui/toast";
 import { useTvStatus } from "@/hooks/use-tv-status";
@@ -27,6 +28,9 @@ export default function App() {
   };
   const handleLaunch = (link: string) => {
     api.launchApp(link).catch((err: ApiError) => toast(err.message));
+  };
+  const handleText = (text: string) => {
+    api.sendText(text).catch((err: ApiError) => toast(err.message));
   };
 
   useKeyboardRemote({ enabled: connected, onKey: handleKey, onPower: handlePower });
@@ -83,6 +87,10 @@ export default function App() {
               </div>
 
               <Remote onKey={handleKey} onPower={handlePower} />
+
+              <div className="border-t pt-5">
+                <Keypad onKey={handleKey} onText={handleText} />
+              </div>
 
               <div className="border-t pt-5">
                 <AppLauncher onLaunch={handleLaunch} currentApp={status.currentApp} />
