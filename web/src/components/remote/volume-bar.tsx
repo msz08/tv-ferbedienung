@@ -1,11 +1,35 @@
 import { motion } from "framer-motion";
 import { Volume1, Volume2, VolumeX, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useHoldRepeat } from "@/hooks/use-hold-repeat";
 import type { TvStatus } from "@/lib/api";
 
 interface VolumeBarProps {
   volume: TvStatus["volume"];
   onKey: (key: string) => void;
+}
+
+/** A small icon button that repeats its action while held. */
+function HoldIconButton({
+  label,
+  onPress,
+  children,
+}: {
+  label: string;
+  onPress: () => void;
+  children: React.ReactNode;
+}) {
+  const hold = useHoldRepeat(onPress);
+  return (
+    <button
+      aria-label={label}
+      {...hold}
+      onClick={(e) => e.detail === 0 && onPress()}
+      className="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-accent"
+    >
+      {children}
+    </button>
+  );
 }
 
 /**
@@ -49,20 +73,12 @@ export function VolumeBar({ volume, onKey }: VolumeBarProps) {
       </div>
 
       <div className="flex shrink-0 gap-1">
-        <button
-          onClick={() => onKey("volume_down")}
-          aria-label="Volume down"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-accent"
-        >
+        <HoldIconButton label="Volume down" onPress={() => onKey("volume_down")}>
           <Minus className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => onKey("volume_up")}
-          aria-label="Volume up"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-accent"
-        >
+        </HoldIconButton>
+        <HoldIconButton label="Volume up" onPress={() => onKey("volume_up")}>
           <Plus className="h-4 w-4" />
-        </button>
+        </HoldIconButton>
       </div>
     </div>
   );

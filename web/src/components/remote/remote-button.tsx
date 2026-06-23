@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useHoldRepeat } from "@/hooks/use-hold-repeat";
 
 interface RemoteButtonProps {
   label: string;
@@ -8,6 +9,8 @@ interface RemoteButtonProps {
   className?: string;
   variant?: "default" | "primary" | "danger";
   disabled?: boolean;
+  /** Repeat the press while held (e.g. volume, seeking). */
+  repeat?: boolean;
 }
 
 const variants = {
@@ -27,14 +30,23 @@ export function RemoteButton({
   className,
   variant = "default",
   disabled,
+  repeat = false,
 }: RemoteButtonProps) {
+  const hold = useHoldRepeat(onPress);
+
+  // When repeating, pointer input drives the hold handlers; onClick is kept
+  // only for keyboard activation (detail === 0) to stay accessible.
+  const interaction = repeat
+    ? { ...hold, onClick: (e: React.MouseEvent) => e.detail === 0 && onPress() }
+    : { onClick: onPress };
+
   return (
     <motion.button
       type="button"
       aria-label={label}
       title={label}
-      onClick={onPress}
       disabled={disabled}
+      {...interaction}
       whileTap={{ scale: 0.9 }}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 500, damping: 28 }}

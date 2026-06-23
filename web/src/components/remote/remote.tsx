@@ -35,11 +35,11 @@ function Rocker({
 }) {
   return (
     <div className="flex flex-col items-center gap-1 rounded-full border bg-secondary/60 p-1.5">
-      <RemoteButton label={`${label} up`} onPress={onUp} className="h-11 w-11">
+      <RemoteButton label={`${label} up`} onPress={onUp} repeat className="h-11 w-11">
         <Plus className="h-5 w-5" />
       </RemoteButton>
       <div className="py-1 text-muted-foreground">{icon}</div>
-      <RemoteButton label={`${label} down`} onPress={onDown} className="h-11 w-11">
+      <RemoteButton label={`${label} down`} onPress={onDown} repeat className="h-11 w-11">
         <Minus className="h-5 w-5" />
       </RemoteButton>
     </div>
@@ -94,7 +94,7 @@ export function Remote({ onKey, onPower, disabled }: RemoteProps) {
         <RemoteButton label="Previous" onPress={k("previous")} disabled={disabled} className="h-11 w-11">
           <SkipBack className="h-4 w-4" />
         </RemoteButton>
-        <RemoteButton label="Rewind" onPress={k("rewind")} disabled={disabled} className="h-11 w-11">
+        <RemoteButton label="Rewind" onPress={k("rewind")} repeat disabled={disabled} className="h-11 w-11">
           <Rewind className="h-4 w-4" />
         </RemoteButton>
         <RemoteButton
@@ -106,7 +106,7 @@ export function Remote({ onKey, onPower, disabled }: RemoteProps) {
         >
           <Play className="h-5 w-5" />
         </RemoteButton>
-        <RemoteButton label="Fast forward" onPress={k("fast_forward")} disabled={disabled} className="h-11 w-11">
+        <RemoteButton label="Fast forward" onPress={k("fast_forward")} repeat disabled={disabled} className="h-11 w-11">
           <FastForward className="h-4 w-4" />
         </RemoteButton>
         <RemoteButton label="Next" onPress={k("next")} disabled={disabled} className="h-11 w-11">
