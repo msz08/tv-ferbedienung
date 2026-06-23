@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { matchCurrentApp, APP_COLORS, type AppEntry } from "@/lib/apps";
+import { resolveAppIcon } from "@/lib/app-icons";
 
 interface AppLauncherProps {
   apps: AppEntry[];
@@ -117,13 +118,14 @@ function AppTile({
   onMove: (index: number, dir: -1 | 1) => void;
   onRemove: (index: number) => void;
 }) {
+  const Icon = resolveAppIcon(app);
   const tile = (
     <>
       <span
         className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white shadow-sm"
         style={{ backgroundColor: app.color }}
       >
-        {app.short}
+        {Icon ? <Icon className="h-5 w-5" /> : app.short}
       </span>
       <span className="truncate text-xs font-medium">{app.name}</span>
     </>
