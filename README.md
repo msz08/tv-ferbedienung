@@ -1,30 +1,28 @@
-# 📺 Television Controller
+# Television Controller
 
-Control your **Android TV / Google TV** (Grundig, Sony, Philips, TCL, Nvidia Shield, Chromecast with Google TV, and more) from your computer through a clean, modern web interface — all over your local network.
+Control your Android TV / Google TV (Grundig, Sony, Philips, TCL, Nvidia Shield, Chromecast with Google TV, and more) from your computer through a clean web interface — all over your local network.
 
-No developer mode, no ADB, no cables. Just run it and pair with a code shown on your TV.
+No developer mode, no ADB, no cables. Run it, pair with a code shown on your TV, and you have a full remote in the browser.
 
-> ⚠️ **Work in progress.** This project is under active development.
+> Work in progress. This project is under active development.
 
----
+## Features
 
-## ✨ Features (planned)
+- Auto-discovery of Android TVs on your network via mDNS
+- Secure pairing using Google's official Android TV Remote Protocol v2 (6-digit on-screen code)
+- Full remote: D-pad, OK, power, volume, mute, media keys, home and back
+- Launch apps on the TV
+- Clean, minimal interface with light and dark themes
+- One-click start on Windows with `baslat.bat`
 
-- 🔍 **Auto-discovery** of Android TVs on your network (mDNS)
-- 🔐 **Secure pairing** using Google's official Android TV Remote Protocol v2 (6-digit code on screen)
-- 🎮 **Full remote**: D-pad, OK, power, volume, mute, media keys, home & back
-- 🚀 **Launch apps** on the TV
-- 🌗 Modern, minimal UI (light/dark) with smooth animations
-- 🖱️ One-click start on Windows via `baslat.bat`
+## Tech Stack
 
-## 🧰 Tech Stack
+- Backend: Node.js, Express, [`androidtv-remote`](https://www.npmjs.com/package/androidtv-remote)
+- Frontend: React, Vite, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
 
-- **Backend:** Node.js + Express, [`androidtv-remote`](https://www.npmjs.com/package/androidtv-remote)
-- **Frontend:** React + Vite + TypeScript + Tailwind CSS + shadcn/ui + Framer Motion
+## Getting Started
 
-## 🚀 Getting Started
-
-> Detailed instructions will be added once the launcher is ready (see project phases).
+Detailed instructions will be added once the launcher is ready.
 
 ```bash
 # 1. Install dependencies
@@ -37,20 +35,20 @@ npm run build
 npm start
 ```
 
-Then open <http://localhost:3000> in your browser.
+Then open http://localhost:3000 in your browser.
 
-On Windows you'll be able to simply double-click **`baslat.bat`**.
+On Windows you will be able to simply double-click `baslat.bat`.
 
-## 📡 Requirements
+## Requirements
 
-- A computer and an **Android TV / Google TV** on the **same local network**
+- A computer and an Android TV / Google TV on the same local network
 - [Node.js](https://nodejs.org/) 18 or newer
 
-## ⚠️ Notes
+## Notes
 
 - Very old Linux/Zeasn-based Grundig models (non-Android) are not supported by this protocol.
-- Powering the TV on while it's fully off may require Wake-on-LAN (planned as a future enhancement).
+- Powering the TV on while it is fully off may require Wake-on-LAN (planned as a future enhancement).
 
-## 📄 License
+## License
 
 MIT

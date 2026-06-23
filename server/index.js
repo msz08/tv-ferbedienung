@@ -15,6 +15,8 @@ import { existsSync } from "node:fs";
 
 import { config } from "./config.js";
 import healthRoutes from "./routes/health.js";
+import tvRoutes from "./routes/tv.js";
+import { tvManager } from "./tv/manager.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const WEB_DIST = join(__dirname, "..", "web", "dist");
@@ -25,6 +27,7 @@ app.use(express.json());
 
 // --- API ------------------------------------------------------------------
 app.use("/api", healthRoutes);
+app.use("/api", tvRoutes);
 
 // --- Static web UI ---------------------------------------------------------
 if (existsSync(WEB_DIST)) {
@@ -50,4 +53,12 @@ const PORT = process.env.PORT || config.get("port") || 3000;
 app.listen(PORT, () => {
   console.log(`\n  📺 Television Controller server running`);
   console.log(`     ➜  http://localhost:${PORT}\n`);
+
+  // Try to silently reconnect to a previously paired TV.
+  tvManager
+    .connectSaved()
+    .then((status) => {
+      if (status) console.log(`     ✓ Reconnected to ${status.name} (${status.host})`);
+    })
+    .catch((err) => console.warn(`     ! Could not reconnect to saved TV: ${err.message}`));
 });
