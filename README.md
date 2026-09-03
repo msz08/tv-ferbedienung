@@ -58,12 +58,6 @@ When connected, your keyboard doubles as the remote:
 - A computer and an Android TV / Google TV on the **same local network**
 - [Node.js](https://nodejs.org/) 18 or newer
 
-## Supported TVs
-
-Any Android TV or Google TV based television or device, including Grundig, Sony, Philips, TCL, Nvidia Shield and Chromecast with Google TV.
-
-Very old Grundig models that are not Android-based (Linux/Zeasn) are not supported, since they don't speak the same remote protocol.
-
 ## Privacy
 
 Nothing leaves your network. The connection is made directly to the TV, and the pairing certificate is stored locally on your machine and never shared.
