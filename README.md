@@ -34,8 +34,6 @@ Fernbedienung verloren? Genervt vom ständigen Gerätewechsel? Mit Television Co
 
 You only need [Node.js](https://nodejs.org/) 18 or newer installed.
 
-**Windows** — double-click `start.bat`
-
 **macOS / Linux** — run `./start.sh`
 
 The first launch installs what it needs and builds the interface, then opens it in your browser automatically. Later launches start in seconds.
