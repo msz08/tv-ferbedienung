@@ -1,4 +1,9 @@
-# Television Controller
+# 
+
+[![Fork of canbedir/television-controler](https://shields.io)](https://github.com/canbedir/television-controler)
+
+
+# Tv-Fernbedienung 
 
 Verwandle deinen Computer in eine Fernbedienung für deinen Fernseher. Television Controller führt eine kleine App in deinem Browser aus. Diese erkennt deinen Android TV im selben Netzwerk und lässt dich das Gerät steuern – Navigation, Lautstärke, Wiedergabe, Apps und mehr – ganz ohne die echte Fernbedienung in die Hand zu nehmen oder etwas auf dem Fernseher installieren zu müssen.
 
