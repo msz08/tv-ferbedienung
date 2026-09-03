@@ -1,4 +1,4 @@
-Dies ist eine angepasste Version von **[television-controler](https://github.com/canbedir/television-controler)** von [canbedir](https://github.com/canbedir).
+Dies ist eine angepasste Version von **[television-controler](https://github.com/canbedir/television-controller)** von [canbedir](https://github.com/canbedir).
 
 # Tv-Fernbedienung 
 
