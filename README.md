@@ -1,14 +1,12 @@
 # Television Controller
 
-Turn your computer into a remote for your TV. Television Controller runs a small app in your browser that detects your Android TV on the same network and lets you control it — navigation, volume, playback, apps and more — without reaching for the physical remote or installing anything on the TV.
+Verwandle deinen Computer in eine Fernbedienung für deinen Fernseher. Television Controller führt eine kleine App in deinem Browser aus. Diese erkennt deinen Android TV im selben Netzwerk und lässt dich das Gerät steuern – Navigation, Lautstärke, Wiedergabe, Apps und mehr – ganz ohne die echte Fernbedienung in die Hand zu nehmen oder etwas auf dem Fernseher installieren zu müssen.
 
 ![Television Controller](docs/image.webp)
 
-## Overview
+## Übersicht
 
-Lost the remote? Tired of switching devices? Television Controller gives you a full, on-screen remote right in your browser. Everything happens locally on your own network — there is no cloud account, no pairing app on your phone, and nothing extra to install on the television itself.
-
-It speaks Google's official Android TV Remote protocol, the same one the Google Home app uses, so you don't need developer mode, ADB, or any cables.
+Fernbedienung verloren? Genervt vom ständigen Gerätewechsel? Mit Television Controller holst du dir eine vollständige Fernbedienung direkt auf den Bildschirm deines Browsers. Alles läuft lokal in deinem eigenen Netzwerk ab – kein Cloud-Konto, keine Pairing-App auf dem Smartphone und keine zusätzliche Installation auf dem Fernseher selbst.Die App nutzt das offizielle Android TV Remote-Protokoll von Google – genau wie die Google Home-App. Du brauchst also weder den Entwicklermodus noch ADB oder irgendwelche Kabel.
 
 ## Features
 
